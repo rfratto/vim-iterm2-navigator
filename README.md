@@ -1,37 +1,51 @@
-## Vim+iterm2 Seamless Navigation Plugin
+# (Neo)vim iTerm2 Navigator
 
-Use Cmd+j, Cmd+k, Cmd+l, Cmd+h to seamlessly navigate between your split Vim panes and split iTerm2 panes while editing.
+This is a vim/neovim plugin inspired by [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator)
+to seamlessly navigate between your split Vim, Neovim, and iTerm2 panes while
+editing.
 
-Based on the similar but different [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) plugin. I wanted to do the same for my native split panes in iTerm, which means using AppleScript...
+## Requirements
 
-This plugin is for developers using cli-mode Vim (not MacVim) inside an iTerm2 window, dealing with lots of split panes.
+1. iTerm2.app
+2. Python API support enabled in iTerm2.app
 
-#### To Install:
+## Installation
 
-Add this repo to your bundles.
+If you don't have a preferred installation method, I recommend using [Dein](https://github.com/Shougo/dein.vim).
+Assuming you have Dein installed and configured, add the following into your
+Dein configuration section:
 
-    cd ~/.vim/bundle
-    git clone git://github.com/zephod/vim-iterm2/navigator
+```vim
+if !empty($ITERM_SESSION_ID)
+  call dein#add('rfratto/vim-iterm2-navigator', {'build': 'make install'})
+endif
+```
 
-Now configure iTerm2's keyboard shortcuts. **Cmd-J** should be set to **run coprocess**. This coprocess is `~/.vim/bundle/vim-iterm2-navigator/switch.py j`. Note the argument passed to the script.  Screenshot of settings:
+Open Vim and run `:call dein#install()` to install the plugin.
 
-![iterm2 config keys](iterm2_options.png)
+Then, in iTerm2, open Preferences and go to the Keys section. Add Key
+Bindings for `<ctrl>-direction`. Each key binding should have an
+action of `Invoke Script Function...` and be set to the following:
 
----
+- `Ctrl-h`: `vim_aware_select_pane(direction: "h")`
+- `Ctrl-j`: `vim_aware_select_pane(direction: "j")`
+- `Ctrl-k`: `vim_aware_select_pane(direction: "k")`
+- `Ctrl-l`: `vim_aware_select_pane(direction: "l")`
 
-Developer Note: This is how I created the applescript/\* files:
+Restart iTerm2 and enjoy!
 
-    osacompile -o iterm2_l.scpt -e "tell application \"System Events\" to key code 124 using {command down, option down}"
-    osacompile -o iterm2_h.scpt  -e "tell application \"System Events\" to key code 123 using {command down, option down}"
-    osacompile -o iterm2_k.scpt    -e "tell application \"System Events\" to key code 126 using {command down, option down}"
-    osacompile -o iterm2_j.scpt  -e "tell application \"System Events\" to key code 125 using {command down, option down}"
-    osacompile -o iterm2_getname.scpt -e "
-      tell application \"iTerm\"
-        activate
-        tell the current terminal
-          tell the current session
-            get name 
-          end tell
-        end tell
-      end tell"
+## Details
 
+`make install` installs two scripts into iTerm2's `Scripts/AutoLaunch` folder,
+which enables those scripts to run as soon as iTerm2 is launched.
+
+`iterm2_nvim_integration.py` opens a Unix socket at `/tmp/iterm2.sock` and will
+listen for connections and read a single string from them. The string sent to
+the socket corresponds to the direction (`h`, `l`, `j`, or `k`) to move the
+pane in iTerm2.
+
+`iterm2_nvim_switch_pane.py` defines the `vim_aware_select_pane` function to
+be exposed to the key bindings. When invoked, if the current iTerm2 pane
+is vim/neovim, a vim function will be invoked to move to a new vim pane. If
+there is no pane to move to, an iTerm pane will be moved to instead. If the
+current iTerm2 pane isn't vim/neovim, a new iTerm pane will be moved to.
