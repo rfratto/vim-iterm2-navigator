@@ -16,7 +16,11 @@ async def try_move(connection, direction):
         print('unknown direction ' + l)
         return
 
-    await iterm2.MainMenu.async_select_menu_item(connection, item)
+    try:
+        await iterm2.MainMenu.async_select_menu_item(connection, item)
+    except BaseException as err:
+        print(f"Unexpected {type(err)=}: {err=}")
+        return
 
 async def main(connection):
     server_address = '/tmp/iterm2.sock'
@@ -38,7 +42,6 @@ async def main(connection):
             data = conn.recv(128)
             data = data.decode("utf-8").strip()
 
-            print('got data')
             try:
                 await try_move(connection, data)
             except:

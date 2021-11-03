@@ -49,3 +49,9 @@ be exposed to the key bindings. When invoked, if the current iTerm2 pane
 is vim/neovim, a vim function will be invoked to move to a new vim pane. If
 there is no pane to move to, an iTerm pane will be moved to instead. If the
 current iTerm2 pane isn't vim/neovim, a new iTerm pane will be moved to.
+
+## Limitations
+
+The title of the iTerm2 profile must either contain Job or allow applications
+to change the title via an escape sequence. This is needed to detect when the
+active pane is running nvim.

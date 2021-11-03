@@ -39,7 +39,11 @@ async def main(connection):
             await session.async_send_text(command, True)
             await session.async_send_text(chr(13), True)
         else:
-            await iterm2.MainMenu.async_select_menu_item(connection, menu_item)
+            try:
+                await iterm2.MainMenu.async_select_menu_item(connection, menu_item)
+            except BaseException as err:
+                print(f"Unexpected {type(err)=}: {err=}")
+                return
 
     await vim_aware_select_pane.async_register(connection)
 
