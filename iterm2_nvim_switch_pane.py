@@ -33,7 +33,7 @@ async def main(connection):
             menu_item = 'Select Split Pane.Select Pane Right'
 
         title = session.pretty_str()
-        is_vim = '(vim)' in title or '(nvim)' in title
+        is_vim = 'vim' in title or 'nvim' in title
         if is_vim:
             await session.async_send_text(chr(27), True)
             await session.async_send_text(command, True)
