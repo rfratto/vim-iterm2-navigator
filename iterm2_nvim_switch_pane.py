@@ -20,24 +20,22 @@ async def main(connection):
         menu_item = ''
 
         if direction == 'h':
-            command = ':ITerm2NavigateLeft'
+            command = chr(ord('H') - 64)
             menu_item = 'Select Split Pane.Select Pane Left'
         elif direction == 'j':
-            command = ':ITerm2NavigateDown'
+            command = chr(ord('J') - 64)
             menu_item = 'Select Split Pane.Select Pane Below'
         elif direction == 'k':
-            command = ':ITerm2NavigateUp'
+            command = chr(ord('K') - 64)
             menu_item = 'Select Split Pane.Select Pane Above'
         elif direction == 'l':
-            command = ':ITerm2NavigateRight'
+            command = chr(ord('L') - 64)
             menu_item = 'Select Split Pane.Select Pane Right'
 
         title = session.pretty_str()
         is_vim = 'vim' in title or 'nvim' in title
         if is_vim:
-            await session.async_send_text(chr(27), True)
             await session.async_send_text(command, True)
-            await session.async_send_text(chr(13), True)
         else:
             try:
                 await iterm2.MainMenu.async_select_menu_item(connection, menu_item)
